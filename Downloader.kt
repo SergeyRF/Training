@@ -11,7 +11,7 @@ class Downloader() {
     private val imageObserver = QueueObservable<String>()
     private val webObserver = QueueObservable<String>()
     private val checkWebObserver = QueueSetObservable<String?>()
-    private val checkImageObserver =  QueueObservable<String?>()
+    private val checkImageObserver =  QueueSetObservable<String?>()
     private lateinit var webName: String
     private val listReport = arrayListOf<Report>()
 
@@ -45,7 +45,7 @@ class Downloader() {
             }
         })
 
-        checkImageObserver.subscribe(object :QueueObservable.QueueObserver<String?>{
+        checkImageObserver.subscribe(object :QueueSetObservable.ObserverSet<String?>{
             override fun observerAdd(value: String?) {
                 if (value!=null) {
                     returnListImage(value).forEach {
