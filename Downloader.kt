@@ -11,7 +11,7 @@ class Downloader() {
     private val imageObserver = QueueObservable<String>()
     private val webObserver = QueueObservable<String>()
     private val checkWebObserver = QueueSetObservable<String?>() // эти переменные должны называться observable а не observer
-    private val checkImageObserver =  QueueObservable<String?>()
+    private val checkImageObserver = QueueSetObservable<String?>()
     private lateinit var webName: String
     private val listReport = arrayListOf<Report>()
 
@@ -47,7 +47,7 @@ class Downloader() {
 
         checkImageObserver.subscribe(object : QueueSetObservable.ObserverSet<String?> {
             override fun observerAdd(value: String?) {
-                if (value!=null) { // вот эти проверки, это гавнецо, ты же на котлине пишешь, юзай let
+                if (value != null) { // вот эти проверки, это гавнецо, ты же на котлине пишешь, юзай let
                     // или вообще сделай значение не нулейбл, если все равно везде не нул юзаешь, или типа observeSafe запили
                     returnListImage(value).forEach {
                         imageObserver.addValue(it)
@@ -84,13 +84,13 @@ class Downloader() {
         checkImageObserver.addValue(textWeb)
         checkWebObserver.addValue(textWeb)
 
-         service.awaitTermination(10,TimeUnit.SECONDS) // тут вообще не понятно че происходит
-         service.shutdown()
-         println("service Shutdown \n\n\n\n\t")
-         service.awaitTermination(100,TimeUnit.SECONDS)
-         synchronized(listReport) {
-             return listReport
-         }
+        service.awaitTermination(10, TimeUnit.SECONDS) // тут вообще не понятно че происходит
+        service.shutdown()
+        println("service Shutdown \n\n\n\n\t")
+        service.awaitTermination(100, TimeUnit.SECONDS)
+        synchronized(listReport) {
+            return listReport
+        }
 
 
     }
@@ -104,9 +104,9 @@ class Downloader() {
         }
     }
 
-        private fun returnListUri(textUri: String): ArrayList<String> {
-            val pattern3 = "(\")(http)([^\\s-]{0,})($webName)([^\\s-]{0,})(\")" // можно все такое вынести в переменные класса
-            val pat = Pattern.compile(pattern3)
+    private fun returnListUri(textUri: String): ArrayList<String> {
+        val pattern3 = "(\")(http)([^\\s-]{0,})($webName)([^\\s-]{0,})(\")" // можно все такое вынести в переменные класса
+        val pat = Pattern.compile(pattern3)
 
         val matcher = pat.matcher(textUri)
         val listUri = arrayListOf<String>()
@@ -141,29 +141,29 @@ class Downloader() {
         return result
     }
 
-        private fun downloadAndSaveImage(imageUri: String,
-                                         fileName: String): Report? {
+    private fun downloadAndSaveImage(imageUri: String,
+                                     fileName: String): Report? {
 
-            try {
-                val image = ImageIO.read(URL(imageUri))
-                val time = System.currentTimeMillis()
-                val file = File(fileName)
-                ImageIO.write(image, "jpg", file)
+        try {
+            val image = ImageIO.read(URL(imageUri))
+            val time = System.currentTimeMillis()
+            val file = File(fileName)
+            ImageIO.write(image, "jpg", file)
 
-                // не обязательно выносить это все в отдельные переменные
-                /*val width = image.width
-                val height = image.height
+            // не обязательно выносить это все в отдельные переменные
+            /*val width = image.width
+            val height = image.height
 
-                val byte = file.length()
-                println("download image $imageUri")*/
+            val byte = file.length()
+            println("download image $imageUri")*/
 
-                return Report(time, file.length(), image.width, image.height, imageUri, fileName)
+            return Report(time, file.length(), image.width, image.height, imageUri, fileName)
 
 
-            } catch (e: Exception) {
-                // printStackTrace как ты дебажить иначе будешь?
-                return null
-            }
+        } catch (e: Exception) {
+            // printStackTrace как ты дебажить иначе будешь?
+            return null
+        }
 
     }
 }
