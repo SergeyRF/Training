@@ -32,7 +32,7 @@ class Downloader() {
 
 
         imageObserver.subscribe(object : QueueObservable.QueueObserver<String> {
-            override fun observerAdd(value: String) {
+            override fun notify(value: String) {
 
                 service.submit {
                     val rep = downloadAndSaveImage(value,
@@ -46,7 +46,7 @@ class Downloader() {
         })
 
         checkImageObserver.subscribe(object : QueueSetObservable.ObserverSet<String?> {
-            override fun observerAdd(value: String?) {
+            override fun notify(value: String?) {
                 if (value != null) { // вот эти проверки, это гавнецо, ты же на котлине пишешь, юзай let
                     // или вообще сделай значение не нулейбл, если все равно везде не нул юзаешь, или типа observeSafe запили
                     returnListImage(value).forEach {
@@ -57,7 +57,7 @@ class Downloader() {
         })
 
         checkWebObserver.subscribe(object : QueueSetObservable.ObserverSet<String?> {
-            override fun observerAdd(value: String?) {
+            override fun notify(value: String?) {
                 if (value != null) {
                     service.submit {
                         returnListUri(value).forEach {
@@ -69,7 +69,7 @@ class Downloader() {
         })
 
         webObserver.subscribe(object : QueueObservable.QueueObserver<String> {
-            override fun observerAdd(value: String) {
+            override fun notify(value: String) {
 
                 // service.submit{
                 val textUri = downloadUri(value)

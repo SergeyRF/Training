@@ -11,12 +11,12 @@ class QueueObservable<T>{
 
     fun addValue(value:T){
         observers.forEach {
-            it.observerAdd(value)
+            it.notify(value)
         }
     }
 
     interface QueueObserver<T>{
-        fun observerAdd(value:T)
+        fun notify(value:T)
     }
 
 }
