@@ -1,6 +1,8 @@
 package downloadImage
 
- fun <T> QueueSetObservable<T>.subscribe(callback: (T) -> Unit) {
+import java.util.*
+
+fun <T> QueueSetObservable<T>.subscribe(callback: (T) -> Unit) {
      val observer = object : QueueSetObservable.ObserverSet<T> {
          override fun notify(value: T) {
              callback.invoke(value)

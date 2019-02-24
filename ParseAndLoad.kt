@@ -18,8 +18,10 @@ class ParseAndLoad(private val website: String) {
     private val queueImage = LinkedList<String>()
     private val setWeb = HashSet<String>()
     private val queueWeb = LinkedList<String>()
-    private var loadCancel = true
+    private var loadCancel = false
+    private val imageObservable = QueueSetObservable<ArrayList<String>>()
 
+/*
 
     fun load() {
 
@@ -57,6 +59,50 @@ class ParseAndLoad(private val website: String) {
             check.checkUri(it, service)
         }
     }
+*/
+
+    fun loadWebImage() {
+
+        imageObservable.subscribe {
+            it.forEach { webImage ->
+                if (setImage.add(webImage)) {
+                    service.submit {
+                        downloader.downloadAndSaveImage(webImage)?.let { addReport(it) }
+                    }
+                }
+            }
+
+           /* while (service.queue.size >20) {
+            }*/
+           loadNextWeb()
+            Thread.currentThread().name
+
+        }
+
+        setWeb.add(website)
+        queueWeb.add(website)
+        loadNextWeb()
+
+    }
+
+
+    private fun loadNextWeb() {
+        val webIter = queueWeb.iterator()
+        if (webIter.hasNext()) {
+            val text = downloader.downloadUri(webIter.next())
+            if (text != null) {
+                val checks = check.checkText(text)
+                imageObservable.addValue(checks[0])
+                checks[1].forEach {
+                    addWeb(it)
+                }
+            }else{
+                loadNextWeb()
+            }
+        } else {
+            loadCancel = true
+        }
+    }
 
     private fun serviceQueue() {
         if (!service.isTerminating) {
@@ -72,7 +118,7 @@ class ParseAndLoad(private val website: String) {
         service.shutdownNow()
     }
 
-    fun loadCancel() = service.isTerminated
+    fun loadCancel() = loadCancel
 
     @Synchronized
     private fun addImage(webImage: String) {
@@ -93,10 +139,10 @@ class ParseAndLoad(private val website: String) {
     }
 
 
-    private fun getNextImage() = synchronized(queueImage) {queueImage.pollFirst()}
+    private fun getNextImage() = synchronized(queueImage) { queueImage.pollFirst() }
 
 
-    private fun queueImageSize() =synchronized(queueImage) { queueImage.size}
+    private fun queueImageSize() = synchronized(queueImage) { queueImage.size }
 
 
     private fun loadImage() {
@@ -108,18 +154,18 @@ class ParseAndLoad(private val website: String) {
             }
         }
         queue.forEach { queueImage.remove(it) }
-       /* while (queueImageSize() > 0) {
-            service.submit {
-                val imageUri = getNextImage()
-                if (imageUri!=null){
-                    val report = downloader.downloadAndSaveImage(imageUri)
-                    if (report!=null){
-                        addReport(report)
-                    }
-                }
-            //    downloader.downloadAndSaveImage(getNextImage())?.let { addReport(it) }
-            }
-        }*/
+        /* while (queueImageSize() > 0) {
+             service.submit {
+                 val imageUri = getNextImage()
+                 if (imageUri!=null){
+                     val report = downloader.downloadAndSaveImage(imageUri)
+                     if (report!=null){
+                         addReport(report)
+                     }
+                 }
+             //    downloader.downloadAndSaveImage(getNextImage())?.let { addReport(it) }
+             }
+         }*/
         if (report.size >= 50) {
             service.shutdown()
         } else {

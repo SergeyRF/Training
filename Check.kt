@@ -1,9 +1,9 @@
 package downloadImage
 
-import any.a
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.regex.Pattern
+import kotlin.collections.ArrayList
 
 class Check(webName: String) {
 
@@ -30,14 +30,17 @@ class Check(webName: String) {
     }
 
     @Synchronized
-    fun checkUri(text:String,servise:ExecutorService){
-        servise.submit {
+    fun checkUri(text:String, service:ExecutorService){
+        service.submit {
             checkListImage(text)
         }
-        servise.submit{
+        service.submit{
             checkListUri(text)
         }
     }
+
+    fun checkText(text: String)= arrayListOf(checkListImage(text),checkListUri(text))
+
     fun getImageObservable() = imageObservable
     fun getWebObservable() = webObservable
 
@@ -58,10 +61,11 @@ class Check(webName: String) {
                 }
                 //webObservable.addValue(a)
                 arrayWeb.add(a)
-                println("any.check web $a")
+               // println("any.check web $a")
             }
         }
-        webListObservable.addValue(arrayWeb)
+     //   webListObservable.addValue(arrayWeb)
+        println("Check web size ${arrayWeb.size}")
         return arrayWeb
     }
 
@@ -78,9 +82,10 @@ class Check(webName: String) {
             }
             //imageObservable.addValue(a)
             arrayImage.add(a)
-            println("any.check image $a")
+           // println("any.check image $a")
         }
-        imageListObservable.addValue(arrayImage)
+       // imageListObservable.addValue(arrayImage)
+        println("check image size ${arrayImage.size}")
         return arrayImage
     }
 

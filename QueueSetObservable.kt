@@ -5,7 +5,7 @@ class QueueSetObservable<T>{
     private val observers = mutableListOf<ObserverSet<T>>()
      private val valueList = hashSetOf<T>()
 
-    @Synchronized
+
     fun subscribe(obs:ObserverSet<T>){
         observers.add(obs)
     }
@@ -18,6 +18,7 @@ class QueueSetObservable<T>{
                 it.notify(value)
             }
         }
+        Thread.currentThread().name
     }
 
     interface ObserverSet<T>{ // не нужно использовать слово set в названии класса если это не коллекция
