@@ -9,9 +9,10 @@ class Check(webName: String) {
 
     private val pattern2 = "(\")([^\\s-]{0,})((\\.jpg)|(\\.png))"
     private val pattern3 = "(\")(http)([^\\s-]{0,})($webName)([^\\s-]{0,})(\")"
+    private val patUri = Pattern.compile(pattern3)
+    private val patImage =Pattern.compile(pattern2)
     private val imageObservable = QueueSetObservable<String>()
     private val webObservable = QueueSetObservable<String>()
-
     private val imageListObservable = QueueObservable<ArrayList<String>>()
     private val webListObservable = QueueObservable<ArrayList<String>>()
 
@@ -41,6 +42,8 @@ class Check(webName: String) {
 
     fun checkText(text: String)= arrayListOf(checkListImage(text),checkListUri(text))
 
+
+
     fun getImageObservable() = imageObservable
     fun getWebObservable() = webObservable
 
@@ -48,10 +51,11 @@ class Check(webName: String) {
     fun getWebListObservable() = webListObservable
 
 
+    fun chekcAll(textUri: String) = LinkLists(checkListImage(textUri),checkListUri(textUri))
+
     private fun checkListUri(textUri: String): ArrayList<String> {
 
-        val pat = Pattern.compile(pattern3)
-        val matcher = pat.matcher(textUri)
+        val matcher = patUri.matcher(textUri)
         val arrayWeb = arrayListOf<String>()
         while (matcher.find()) {
             var a = matcher.group().replace("\"", "").replace(" ", "")
@@ -72,8 +76,7 @@ class Check(webName: String) {
 
     private fun checkListImage(textUri: String): ArrayList<String> {
 
-        val pat = Pattern.compile(pattern2)
-        val matcher = pat.matcher(textUri)
+        val matcher = patImage.matcher(textUri)
         val arrayImage = arrayListOf<String>()
         while (matcher.find()) {
             var a = matcher.group().replace("\"", "").replace(" ", "")
