@@ -17,22 +17,6 @@ class Downloader2 {
         }
     }
 
-
-    fun downloadAndSaveImage(imageUri: String,
-                             fileName: String): Report? = try {
-        val image = ImageIO.read(URL(imageUri))
-        val time = System.currentTimeMillis()
-        val file = File(fileName)
-        ImageIO.write(image, "jpg", file)
-        println("download image $imageUri")
-
-        Report(time, file.length(), image.width, image.height, imageUri, fileName)
-
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
-
     fun downloadAndSaveImage(imageUri: String): Report? {
         val fileName = "${imageUri.replace("/", "").replace(".", "")}.jpg"
         return try {

@@ -11,44 +11,9 @@ class Check(webName: String) {
     private val pattern3 = "(\")(http)([^\\s-]{0,})($webName)([^\\s-]{0,})(\")"
     private val patUri = Pattern.compile(pattern3)
     private val patImage =Pattern.compile(pattern2)
-    private val imageObservable = QueueSetObservable<String>()
-    private val webObservable = QueueSetObservable<String>()
-    private val imageListObservable = QueueObservable<ArrayList<String>>()
-    private val webListObservable = QueueObservable<ArrayList<String>>()
-
-
-    @Synchronized
-    fun checkUri(textUri: String) {
-        checkListImage(textUri)
-          /*      .forEach {
-            imageObservable.addValue(it)
-        }*/
-        checkListUri(textUri).forEach {
-
-            webObservable.addValue(it)
-
-        }
-    }
-
-    @Synchronized
-    fun checkUri(text:String, service:ExecutorService){
-        service.submit {
-            checkListImage(text)
-        }
-        service.submit{
-            checkListUri(text)
-        }
-    }
-
-    fun checkText(text: String)= arrayListOf(checkListImage(text),checkListUri(text))
 
 
 
-    fun getImageObservable() = imageObservable
-    fun getWebObservable() = webObservable
-
-    fun getImageListObservable() = imageListObservable
-    fun getWebListObservable() = webListObservable
 
 
     fun chekcAll(textUri: String) = LinkLists(checkListImage(textUri),checkListUri(textUri))
@@ -63,12 +28,9 @@ class Check(webName: String) {
                 if (a.indexOf("//") == 0) {
                     a = "https:$a"
                 }
-                //webObservable.addValue(a)
                 arrayWeb.add(a)
-               // println("any.check web $a")
             }
         }
-     //   webListObservable.addValue(arrayWeb)
         println("Check web size ${arrayWeb.size}")
         return arrayWeb
     }
@@ -83,11 +45,8 @@ class Check(webName: String) {
             if (a.indexOf("//") == 0) {
                 a = "https:$a"
             }
-            //imageObservable.addValue(a)
             arrayImage.add(a)
-           // println("any.check image $a")
         }
-       // imageListObservable.addValue(arrayImage)
         println("check image size ${arrayImage.size}")
         return arrayImage
     }
